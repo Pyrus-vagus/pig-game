@@ -8,9 +8,10 @@ score0El.textContent = 0;
 score1El.textContent = 0;
 dice.classList.add("hidden");
 
-//  Creating random number on click
 const player0 = document.querySelector(".player--0");
 const player1 = document.querySelector(".player--1");
+
+//Roll-dice button functionality
 const current0 = document.querySelector("#current--0");
 const current1 = document.querySelector("#current--1");
 let currScore = 0;
@@ -54,3 +55,26 @@ const rollDice = function () {
 
 const btnRoll = document.querySelector(".btn--roll");
 btnRoll.addEventListener("click", rollDice);
+
+// Hold button functionality
+const holdBtn = document.querySelector(".btn--hold");
+let score0 = 0;
+let score1 = 0;
+const scoreHandler = function () {
+  if (isActive(player0)) {
+    score0 += currScore;
+    score0El.textContent = score0;
+    currScore = 0;
+    current0.textContent = 0;
+    removeActive(player0);
+    setActive(player1);
+  } else {
+    score1 += currScore;
+    score1El.textContent = score1;
+    currScore = 0;
+    current1.textContent = 0;
+    removeActive(player1);
+    setActive(player0);
+  }
+};
+holdBtn.addEventListener("click", scoreHandler);
