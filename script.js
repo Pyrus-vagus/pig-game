@@ -19,10 +19,14 @@ const isActive = function (el) {
   return el.classList.contains("player--active");
 };
 const removeActive = function (el) {
-  el.classList.remove("player--active");
+  el.classList.contains("player--active")
+    ? el.classList.remove("player--active")
+    : el;
 };
 const setActive = function (el) {
-  el.classList.add("player--active");
+  !el.classList.contains("player--active")
+    ? el.classList.add("player--active")
+    : el;
 };
 const setCurrentScore = function (value) {
   if (value === 1) {
@@ -78,3 +82,20 @@ const scoreHandler = function () {
   }
 };
 holdBtn.addEventListener("click", scoreHandler);
+
+// 'New game' button functionality
+
+const newBtn = document.querySelector(".btn--new");
+const resetGame = function () {
+  currScore = 0;
+  current0.textContent = 0;
+  current1.textContent = 0;
+  score0 = 0;
+  score1 = 0;
+  score0El.textContent = 0;
+  score1El.textContent = 0;
+  dice.classList.add("hidden");
+  removeActive(player1);
+  setActive(player0);
+};
+newBtn.addEventListener("click", resetGame);
