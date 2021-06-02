@@ -1,38 +1,26 @@
 "use strict";
 
-// Starting conditions
-let currScore = 0;
-let activePlayer = 0;
-const scores = [0, 0];
-
 // Selecting elements
 
 const dice = document.querySelector(".dice");
 const btnRoll = document.querySelector(".btn--roll");
 const newBtn = document.querySelector(".btn--new");
 const holdBtn = document.querySelector(".btn--hold");
+const player0El = document.querySelector(".player--0").classList;
+const player1El = document.querySelector(".player--1").classList;
+const score0El = document.querySelector("#score--0");
+const score1El = document.querySelector("#score--1");
+// Starting conditions
+let currScore, activePlayer, playing, scores;
 
-resetTheGame();
-
-// remove active-player status
-function removeActive() {
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.remove("player--active");
-}
-// set active-player status
-function setActive() {
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.add("player--active");
-}
+startNewGame();
 // switch active player
 function switchPlayer() {
-  removeActive();
   currScore = 0;
   document.querySelector(`#current--${activePlayer}`).textContent = 0;
   activePlayer = activePlayer === 0 ? 1 : 0;
-  setActive();
+  player0El.toggle("player--active");
+  player1El.toggle("player--active");
 }
 // calculate current score
 function setCurrentScore(value) {
@@ -51,48 +39,54 @@ function setPicture(value) {
 
 //Roll-dice button functionality
 function rollDice() {
-  const diceValue = Math.floor(Math.random() * (7 - 1)) + 1;
-  setCurrentScore(diceValue);
-  setPicture(diceValue);
+  if (playing) {
+    const diceValue = Math.floor(Math.random() * (7 - 1)) + 1;
+    setCurrentScore(diceValue);
+    setPicture(diceValue);
+  }
 }
 
 // Hold button functionality
 function scoreHandler() {
-  scores[activePlayer] += currScore;
-  document.querySelector(`#score--${activePlayer}`).textContent =
-    scores[activePlayer];
-  scores[activePlayer] >= 100 ? winTheGame() : switchPlayer();
+  if (playing) {
+    scores[activePlayer] += currScore;
+    document.querySelector(`#score--${activePlayer}`).textContent =
+      scores[activePlayer];
+    scores[activePlayer] >= 100 ? winTheGame() : switchPlayer();
+  }
 }
 
 // set styles for the winner
 function winTheGame() {
-  const winner = document.querySelector(`.player--${activePlayer}`).classList;
-  const winnerName = document.querySelector(`#name--${activePlayer}`).classList;
-  winner.add("player--winner");
-  winnerName.add("player--winner");
-  btnRoll.removeEventListener("click", rollDice);
-  holdBtn.removeEventListener("click", scoreHandler);
+  document
+    .querySelector(`.player--${activePlayer}`)
+    .classList.add("player--winner");
+  document
+    .querySelector(`.player--${activePlayer}`)
+    .classList.remove("player--active");
+  playing = false;
+  dice.classList.add("hidden");
 }
 
 //reset the game
-function resetTheGame() {
-  const winner = document.querySelector(`.player--${activePlayer}`).classList;
-  const winnerName = document.querySelector(`#name--${activePlayer}`).classList;
-  winner.contains("player--winner") ? winner.remove("player--winner") : winner;
-  winnerName.contains("player--winner")
-    ? winnerName.remove("player--winner")
-    : winnerName;
+function startNewGame() {
+  currScore = 0;
+  activePlayer = 0;
+  playing = true;
+  scores = [0, 0];
+
+  score0El.textContent = 0;
+  score1El.textContent = 0;
   document.querySelector("#current--0").textContent = 0;
   document.querySelector("#current--1").textContent = 0;
-  activePlayer = 1;
-  switchPlayer();
-  scores[0] = 0;
-  scores[1] = 0;
+
   dice.classList.add("hidden");
-  document.querySelector("#score--0").textContent = 0;
-  document.querySelector("#score--1").textContent = 0;
-  btnRoll.addEventListener("click", rollDice);
-  holdBtn.addEventListener("click", scoreHandler);
+  player0El.remove("player--winner");
+  player1El.remove("player--winner");
+  player1El.remove("player--active");
+  player0El.add("player--active");
 }
 
-newBtn.addEventListener("click", resetTheGame);
+btnRoll.addEventListener("click", rollDice);
+holdBtn.addEventListener("click", scoreHandler);
+newBtn.addEventListener("click", startNewGame);
